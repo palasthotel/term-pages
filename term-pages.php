@@ -15,24 +15,22 @@ class Term_Pages {
 	 * Class construct method. Adds actions to their respective WordPress hooks.
 	 */
 	public function __construct() {
-		
-	$args = array(
-	'public'   => true,
-	'_builtin' => true,
- 	); 
- 	$output = 'names';  	
- 	$operator = 'and'; 	
-	$taxonomies = get_taxonomies( $args, $output, $operator );
-	
-	foreach( $taxonomies as $taxonomy) {
-		
-		  echo '<h1> hallo taxo: ' . $taxonomy . '</h1>';
-	
-		  add_action( $taxonomy.'_add_form_fields', array($this,'add_extra_taxonomy_field' ));
-		  add_action( $taxonomy.'_edit_form_fields',array($this, 'edit_extra_taxonomy_field'),10,2);
-		  add_action( 'created_'.$taxonomy, array($this,'save_extra_field' ));
-		  add_action( 'edited_'.$taxonomy, array($this, 'update_extra_field' ),10,2);
-		}
+		add_action( 'init', array($this, 'add_taxonomie_fields'), 10);
+	}
+
+	function add_taxonomie_fields(){
+		$taxonomies = get_taxonomies( );
+		print_r($taxonomies);
+
+		/*foreach( $taxonomies as $taxonomy) {
+
+			  echo '<h1> hallo taxo: ' . $taxonomy . '</h1>';
+
+			  add_action( $taxonomy.'_add_form_fields', array($this,'add_extra_taxonomy_field' ));
+			  add_action( $taxonomy.'_edit_form_fields',array($this, 'edit_extra_taxonomy_field'),10,2);
+			  add_action( 'created_'.$taxonomy, array($this,'save_extra_field' ));
+			  add_action( 'edited_'.$taxonomy, array($this, 'update_extra_field' ),10,2);
+			}*/
 	}
 	
 function add_extra_taxonomy_field( $taxonomy ) { 
