@@ -16,7 +16,8 @@ class Term_Pages {
 	 */
 	public function __construct() {
 		add_action( 'init', array($this, 'add_taxonomie_fields'), 10);
-		add_action( 'pre_get_posts', array( $this, 'custom_page_query' ),1);		
+ 		add_action( 'pre_get_posts', array( $this, 'custom_page_query' ),1);	
+//		add_action( 'template_redirect', array( $this, 'hooks_setup' ), 20 );	
 	}
 
 	function add_taxonomie_fields(){
@@ -61,78 +62,49 @@ function update_extra_field( $term_id, $tt_id){
 	$group = sanitize_title( $_POST['or-page-id'] );
 	update_term_meta( $term_id, 'or-page-id', $group );
 	}
+	else if ( $_POST['or-page-id'] == ''){
+	delete_term_meta( $term_id, 'or-page-id');	
+		
+	}
 }
+
 
 function custom_page_query ( $query ){
 	
-/*
+	$term = get_queried_object();
 
+/*
 	echo("<pre>");
 	var_dump($query);
 	echo("</pre>");
 */
 
 
-	if ($query->is_category() &&  !($query->is_paged())) {		
-		$term = get_queried_object();
-
-/*
-
-	echo("<pre>");
-	var_dump( $term );
-	echo("</pre>");
-
-	echo("<pre>");
-	var_dump( $query );
-	echo("</pre>");
-	
-*/
-
-	 $term_id = $term -> term_id; 
-	
-	$orid = get_term_meta( $term_id, 'or-page-id', TRUE );
-/*
-	$paged = get_query_var( 'paged');
-	
-	$new_pager = $paged +1;
-	 set_query_var( 'paged', $new_pager );
-	 
-	echo("<pre>");
-	var_dump( $paged );
-	var_dump( $new_pager );
-	echo("</pre>");
-	
-*/
-	//wp_redirect(get_permalink($orid) , $status= 301);
-	//exit;
-	
-
-	$query->set('post_type','page');
-	$query->set('post_count','1');
-	$query->set('page_id',$orid);
-
-
-	
-	
-	echo("<pre>");
-	var_dump( $orid );
-	echo("</pre>");
-	
-/*
-	$query->query_vars['post_type'] = 'page';
-	$query->query_vars['page_id'] = $orid;
-	
-*/
-	
-/*
-	echo("<pre>");
-	var_dump( $query );
-	echo("</pre>");
-*/
+	if (($query->is_category())||($query->is_tax()) || ($query->is_tag())) {		
 		
-	}
-	
-}
+			
+			$term = get_queried_object();
+			
+			$term_id = $term -> term_id; 
+			
+			$orid = intval(get_term_meta( $term_id, 'or-page-id', TRUE ));
+			
+			$paged = get_query_var( 'paged');
+		
+			if (($orid > 0) && ($paged < 1)){
+				
+				//echo("bitte gehen sie weiter");
+				wp_redirect(get_permalink($orid) , $status= 302);
+				exit;	
+			}
+			else
+			{
+				//echo("1. 2. 3.seite, keine weiterleitung keine page nur terms");
+			}
+			
+	}	
+ }
+
    
 }
 
