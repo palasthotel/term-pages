@@ -1,10 +1,10 @@
-=== Postqueue ===
+=== Term Pages ===
 Contributors: pixelwelt
 Donate link: http://palasthotel.de/
-Tags: tags, categories, taxonmies, pages
+Tags: term, tags, category, static page
 Requires at least: 4.0
-Tested up to: 4.6.1
-Stable tag: 1.1.3
+Tested up to: 4.7.2
+Stable tag: 1.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl
 
@@ -16,6 +16,7 @@ If you want to customize your taxonomie archive pages you can do this by creatin
 
 This Plugin is reasonable to use with [Grid](http://wordpress.org/plugins/grid/ "Grid Landingpage Editor"), so you can create beautiful pages for your topics.
 
+
 == Installation ==
 
 1. Upload `term-pages.zip` to the `/wp-content/plugins/` directory
@@ -24,9 +25,11 @@ This Plugin is reasonable to use with [Grid](http://wordpress.org/plugins/grid/ 
 
 == Frequently Asked Questions ==
 
+No frequently asked questions yet.
 
 == Screenshots ==
 
+1. Admin view for a tag where you can add the relation to a page in the autocomplete field.
 
 == Changelog ==
 
@@ -34,5 +37,7 @@ This Plugin is reasonable to use with [Grid](http://wordpress.org/plugins/grid/ 
 * First release
 
 == Upgrade Notice ==
+
+No notices for upgrade.
 
 == Arbitrary section ==
