@@ -46,6 +46,7 @@ class Term_Pages {
 	function admin_enqueue_scripts() {
 		wp_enqueue_script( 'suggest' );
 		wp_enqueue_style( 'suggest' );
+		wp_enqueue_script('remove', plugin_dir_url(__FILE__) . 'remove.js');
 	}
 
 	/**
@@ -114,7 +115,7 @@ class Term_Pages {
 
 
 		<td><input type="text" class="or-page-id" name="or-page-id" size="20"
-		           value="<?php echo esc_attr( $orpageid ); ?>">
+		           value="<?php echo esc_attr( $orpageid ); ?>"><button id="remove" title="löschen" aria-label="löschen" type="button">&times;</button>
 		</tr><?php
 	}
 
@@ -161,7 +162,7 @@ class Term_Pages {
 			$id         = $row->ID;
 
 
-			echo $post_title . ' : ' . $id . "\n";
+			echo $post_title . ' : ' . $id ."\n";
 		}
 
 
