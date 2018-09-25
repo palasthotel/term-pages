@@ -7,6 +7,8 @@
  * Author: PALASTHOTEL <rezeption@palasthotel.de>
  * Author URI: http://www.palasthotel.de
  * Requires at least: 4.0
+ * Text Domain: term-pages
+ * Domain Path: /languages
  * @copyright Copyright (c) 2016, Palasthotel
  */
 class Term_Pages {
@@ -21,13 +23,15 @@ class Term_Pages {
 		add_action( 'wp_ajax_tp_lookup', array( $this, 'lookup_pages' ), 8 );
 		add_action( 'wp_ajax_nopriv_tp_lookup', array( $this, 'lookup_pages' ), 8 );
 		add_action( 'admin_footer', array( $this, 'render_frontend_js' ), 9 );
-
 	}
 
 	/**
 	 * Add Page-ID field to every registered taxonomy
 	 */
 	function add_taxonomie_fields() {
+
+		load_plugin_textdomain( 'term-pages', FALSE, 'term-pages/languages' );
+
 		$taxonomies = get_taxonomies();
 
 		foreach ( $taxonomies as $taxonomy ) {
@@ -72,8 +76,8 @@ class Term_Pages {
 		global $orpageid;
 		?>
 		<div class="form-field term-group">
-		<label for="feature-group"><?php _e( 'overriding page', 'term-pages' ); ?></label>
-			<input type="text" class="or-page-id" name="or-page-id" size="20" value="<?php echo esc_attr( $orpageid ); ?>">
+			<label for="feature-group"><?php _e( 'overriding page', 'term-pages' ); ?></label>
+			<input type="text" placeholder="<?= _e( 'Please insert the title of the published page', 'term-pages' ); ?>" class="or-page-id" name="or-page-id" size="20" value="<?php echo esc_attr( $orpageid ); ?>">
 		</div>
 
 
@@ -110,13 +114,14 @@ class Term_Pages {
 		}
 
 		?>
-		<tr class="form-field term-group-wrap">
-		<th scope="row"><label for="feature-group"><?php _e( 'Overwrite first page of taxonomie with page:', 'term-pages' ); ?></label></th>
-
-
-		<td><input type="text" class="or-page-id" name="or-page-id" size="20"
-		           value="<?php echo esc_attr( $orpageid ); ?>"><button id="remove" title="löschen" aria-label="löschen" type="button">&times;</button>
-		</tr><?php
+		<tr>
+			<td colspan="2">
+			<div class="form-field term-group">
+				<label for="feature-group"><?php _e( 'overriding page', 'term-pages' ); ?></label>
+				<input type="text" placeholder="<?= _e( 'Please insert the title of the published page', 'term-pages' ); ?>" class="or-page-id" name="or-page-id" size="20" value="<?php echo esc_attr( $orpageid ); ?>">
+			</div>
+		</tr>
+		<?php
 	}
 
 	/**
