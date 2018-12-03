@@ -38,7 +38,7 @@ class Term_Pages {
 
 			add_action( $taxonomy . '_add_form_fields', array( $this, 'add_extra_taxonomy_field' ) );
 			add_action( $taxonomy . '_edit_form_fields', array( $this, 'admin_render_taxonomy_field' ), 10, 2 );
-			add_action( 'created_' . $taxonomy, array( $this, 'save_extra_field' ) );
+			add_action( 'created_' . $taxonomy, array( $this, 'save_extra_field' ), 10 , 2 );
 			add_action( 'edited_' . $taxonomy, array( $this, 'update_extra_field' ), 10, 2 );
 
 		}
