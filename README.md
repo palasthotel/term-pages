@@ -33,6 +33,9 @@ No frequently asked questions yet.
 
 == Changelog ==
 
+= 1.0.1 =
+* Bugfix: Missing argument 2 for Term_Pages::save_extra_field()
+
 = 1.0 =
 * First release
 
