@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Term-Pages
  * Description: Overwrites first page of term archives with a page.
- * Version: 1.0
+ * Version: 1.0.1
  * Author: PALASTHOTEL <rezeption@palasthotel.de>
  * Author URI: http://www.palasthotel.de
  * Requires at least: 4.0
