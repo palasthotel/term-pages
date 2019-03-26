@@ -184,6 +184,11 @@ class Term_Pages {
 		if ( ( $query->is_category() ) || ( $query->is_tax() ) || ( $query->is_tag() ) ) {
 
 			$term = get_queried_object();
+			
+			if ( ! is_countable( $term ) || count( $term ) == 0 ) {
+				return;
+			}
+			
 			$term_id = $term->term_id;
 			$orid = intval( get_term_meta( $term_id, 'or-page-id', true ) );
 
