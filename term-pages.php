@@ -134,7 +134,7 @@ class Term_Pages {
 			$str = $_POST['or-page-id'];
 
 			//get post id from string
-			preg_match( '/(?<name>\w+) : (?<id>\d+)/', $str, $treffer );
+			preg_match( '/(?<name>.+) : (?<id>\d+)/', $str, $treffer );
 
 			//check value for id and save it
 			if(isset($treffer['id']) && get_post(intval($treffer['id'])) != null) {
