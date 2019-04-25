@@ -184,18 +184,16 @@ class Term_Pages {
 		if ( ( $query->is_category() ) || ( $query->is_tax() ) || ( $query->is_tag() ) ) {
 
 			$term = get_queried_object();
-			
-			if ( ! is_countable( $term ) || count( $term ) == 0 ) {
-				return;
+			if( ! ( $term instanceof WP_Term ) ) {
+			    return;
 			}
-			
+
 			$term_id = $term->term_id;
 			$orid = intval( get_term_meta( $term_id, 'or-page-id', true ) );
-
 			$paged = get_query_var( 'paged' );
 
 			//redirect if this is the first (unpaged) page of the taxonomy and we have an id for overwriting
-			if ( ( $orid > 0 ) && ( $paged < 1 ) ) {
+			if ( ( $orid > 0 ) && ( $paged <= 1 ) ) {
 				wp_redirect(get_permalink($orid) , $status= 301);
 				exit;
 			}
