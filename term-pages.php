@@ -181,7 +181,7 @@ class Term_Pages {
 	 */
 	function custom_page_query( $query ) {
 		//check if we have a taxonomy
-		if ( ( $query->is_category() ) || ( $query->is_tax() ) || ( $query->is_tag() ) ) {
+		if ( $query->is_main_query() && ( $query->is_category() ) || ( $query->is_tax() ) || ( $query->is_tag() ) ) {
 
 			$term = get_queried_object();
 			
