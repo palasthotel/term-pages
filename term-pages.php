@@ -177,15 +177,19 @@ class Term_Pages {
 
 	/**
 	 * Redirect to taxonomy-page if there is no page parameter
-	 * @param $query
+	 * @param \WP_Query $query
 	 */
 	function custom_page_query( $query ) {
 		//check if we have a taxonomy
 		if ( ( $query->is_category() ) || ( $query->is_tax() ) || ( $query->is_tag() ) ) {
 
 			$term = get_queried_object();
+			if($term == null && isset($query->query["category_name"]) && !empty($query->query["category_name"])){
+				$cat = $query->query["category_name"];
+				$term = get_term_by("slug", $cat, "category");
+			}
 			
-			if ( ! is_countable( $term ) || count( $term ) == 0 ) {
+			if ( !($term instanceof WP_Term)) {
 				return;
 			}
 			
