@@ -3,13 +3,14 @@
 /**
  * Plugin Name: Term-Pages
  * Description: Overwrites first page of term archives with a page.
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: PALASTHOTEL <rezeption@palasthotel.de>
  * Author URI: http://www.palasthotel.de
  * Requires at least: 4.0
+ * Tested
  * Text Domain: term-pages
  * Domain Path: /languages
- * @copyright Copyright (c) 2016, Palasthotel
+ * @copyright Copyright (c) 2019, Palasthotel
  */
 class Term_Pages {
 
