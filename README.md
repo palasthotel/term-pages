@@ -1,10 +1,10 @@
 === Term Pages ===
-Contributors: pixelwelt
+Contributors: pixelwelt, edwardbock, palasthotel
 Donate link: http://palasthotel.de/
 Tags: term, tags, category, static page
 Requires at least: 4.0
-Tested up to: 4.7.2
-Stable tag: 1.0.2
+Tested up to: 5.3.2
+Stable tag: 1.0.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl
 
@@ -32,6 +32,9 @@ No frequently asked questions yet.
 1. Admin view for a tag where you can add the relation to a page in the autocomplete field.
 
 == Changelog ==
+
+= 1.0.3 =
+* Bugfix: wrong countable $term check
 
 = 1.0.2 =
 * Bugfix: Remove warning
