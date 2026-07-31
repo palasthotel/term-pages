@@ -1,6 +1,6 @@
-# Term Pages
+# WordPress Term Pages
 
-Overwrites the first page of a term archive with a page.
+WordPress Plugin for overwriting the first page of a term archive with a single page.
 
 If you want to customize your taxonomy archive pages, create a page and connect
 it with the term you want to overwrite. Visitors hitting the term archive get a
