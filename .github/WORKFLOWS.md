@@ -151,8 +151,12 @@ The GitHub App is installed on this repository with `Contents: read & write` and
 `Pull requests: read & write`. `SVN_REPO_URL` is repo-level because the slug
 differs per plugin; everything else is shared across all plugin repos.
 
-If a ruleset protects `main`, the app needs to be on that ruleset's bypass list —
-otherwise release-please cannot push its tag.
+release-please never pushes to `main` — it opens a pull request — so a branch
+ruleset on `main` needs no exception for the app. Add the app as a bypass actor
+only if one of these applies: a **tag** ruleset restricts creating `v*` tags, a
+ruleset also covers the `release-please--*` branches and forbids direct pushes,
+or signed commits are required. In those cases the bot cannot tag the release or
+update its own release PR.
 
 ---
 
