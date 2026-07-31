@@ -66,4 +66,4 @@ bash bin/pack.sh    # → term-pages.zip + build/term-pages/
 
 ## License
 
-GPLv3 — see http://www.gnu.org/licenses/gpl
+GNU General Public License v3.0 or later — see [LICENSE](LICENSE).
