@@ -51,6 +51,7 @@ entries alone.
 
 ## Checks
 
-Every PR runs `php -l` against PHP 7.4, 8.2 and 8.3. The plugin declares
-`Requires at least: 4.0`, so avoid syntax that breaks on older PHP versions
-unless you bump that requirement in the same PR.
+Every PR runs `php -l` against PHP 7.4, 8.2, 8.3 and 8.4. The plugin declares
+`Requires PHP: 7.4` and `Requires at least: 6.2` (WordPress), so avoid syntax
+and APIs newer than that unless you raise the requirement in `term-pages.php`
+and `readme.txt` in the same PR.
