@@ -29,7 +29,7 @@ and extract it into `wp-content/plugins/`.
 | Path | Description |
 |---|---|
 | `term-pages.php` | the plugin |
-| `remove.js` | admin JS for the autocomplete field |
+| `admin.js` | page autocomplete on the term screens |
 | `languages/` | translations (`de_DE` + `.pot`) |
 | `readme.txt` | WordPress.org plugin page |
 | `bin/` | release helper scripts |

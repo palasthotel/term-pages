@@ -1,210 +1,376 @@
 <?php
+/**
+ * Plugin Name:       Term Pages
+ * Plugin URI:        https://wordpress.org/plugins/term-pages/
+ * Description:       Redirects the first page of a term archive to a page of your choice.
+ * Version:           1.0.3
+ * Requires at least: 6.2
+ * Requires PHP:      7.4
+ * Author:            PALASTHOTEL <rezeption@palasthotel.de>
+ * Author URI:        https://www.palasthotel.de
+ * License:           GPL-3.0-or-later
+ * License URI:       https://www.gnu.org/licenses/gpl-3.0.html
+ * Text Domain:       term-pages
+ * Domain Path:       /languages
+ *
+ * @copyright Copyright (c) 2019, Palasthotel
+ */
+
+defined( 'ABSPATH' ) || exit;
 
 /**
- * Plugin Name: Term-Pages
- * Description: Overwrites first page of term archives with a page.
- * Version: 1.0.3
- * Author: PALASTHOTEL <rezeption@palasthotel.de>
- * Author URI: http://www.palasthotel.de
- * Requires at least: 4.0
- * Tested
- * Text Domain: term-pages
- * Domain Path: /languages
- * @copyright Copyright (c) 2019, Palasthotel
+ * Connects taxonomy terms to a page and redirects the term archive there.
  */
 class Term_Pages {
 
 	/**
-	 * Class construct method. Adds actions to their respective WordPress hooks.
+	 * Term meta key holding the page ID. Unchanged since 1.0 for compatibility.
+	 */
+	const META_KEY = 'or-page-id';
+
+	/**
+	 * Name of the form field submitted with the term.
+	 */
+	const FIELD_NAME = 'or-page-id';
+
+	/**
+	 * admin-ajax action of the page search.
+	 */
+	const AJAX_ACTION = 'tp_lookup';
+
+	/**
+	 * Nonce action guarding the page search.
+	 */
+	const NONCE_ACTION = 'term-pages-lookup';
+
+	/**
+	 * Maximum number of autocomplete suggestions.
+	 */
+	const MAX_RESULTS = 20;
+
+	/**
+	 * Register the hooks.
 	 */
 	public function __construct() {
-		add_action( 'init', array( $this, 'add_taxonomie_fields' ), 10 );
-		add_action( 'pre_get_posts', array( $this, 'custom_page_query' ), 1 );
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 10 );
-		add_action( 'wp_ajax_tp_lookup', array( $this, 'lookup_pages' ), 8 );
-		add_action( 'wp_ajax_nopriv_tp_lookup', array( $this, 'lookup_pages' ), 8 );
-		add_action( 'admin_footer', array( $this, 'render_frontend_js' ), 9 );
+		add_action( 'init', array( $this, 'init' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
+		add_action( 'wp_ajax_' . self::AJAX_ACTION, array( $this, 'ajax_lookup_pages' ) );
+		add_action( 'template_redirect', array( $this, 'redirect_term_archive' ) );
 	}
 
 	/**
-	 * Add Page-ID field to every registered taxonomy
+	 * Load translations and add the page field to every taxonomy with a UI.
 	 */
-	function add_taxonomie_fields() {
+	public function init() {
+		load_plugin_textdomain(
+			'term-pages',
+			false,
+			dirname( plugin_basename( __FILE__ ) ) . '/languages'
+		);
 
-		load_plugin_textdomain( 'term-pages', FALSE, 'term-pages/languages' );
-
-		$taxonomies = get_taxonomies();
-
-		foreach ( $taxonomies as $taxonomy ) {
-
-			add_action( $taxonomy . '_add_form_fields', array( $this, 'add_extra_taxonomy_field' ) );
-			add_action( $taxonomy . '_edit_form_fields', array( $this, 'admin_render_taxonomy_field' ), 10, 2 );
-			add_action( 'created_' . $taxonomy, array( $this, 'save_extra_field' ), 10 , 2 );
-			add_action( 'edited_' . $taxonomy, array( $this, 'update_extra_field' ), 10, 2 );
-
+		foreach ( get_taxonomies( array( 'show_ui' => true ) ) as $taxonomy ) {
+			add_action( $taxonomy . '_add_form_fields', array( $this, 'render_add_field' ) );
+			add_action( $taxonomy . '_edit_form_fields', array( $this, 'render_edit_field' ), 10, 2 );
+			add_action( 'created_' . $taxonomy, array( $this, 'save_field' ), 10, 2 );
+			add_action( 'edited_' . $taxonomy, array( $this, 'save_field' ), 10, 2 );
 		}
 	}
 
+	/* ---------------------------------------------------------------------
+	 * Admin UI
+	 * ------------------------------------------------------------------ */
+
 	/**
-	 * Enqueue Scripts
+	 * Load the autocomplete only on the term screens that show the field.
+	 *
+	 * @param string $hook_suffix Current admin page.
 	 */
-	function admin_enqueue_scripts() {
-		wp_enqueue_script( 'suggest' );
-		wp_enqueue_style( 'suggest' );
-		wp_enqueue_script('remove', plugin_dir_url(__FILE__) . 'remove.js');
+	public function enqueue_admin_assets( $hook_suffix ) {
+		if ( ! in_array( $hook_suffix, array( 'edit-tags.php', 'term.php' ), true ) ) {
+			return;
+		}
+
+		wp_enqueue_script(
+			'term-pages-admin',
+			plugins_url( 'admin.js', __FILE__ ),
+			array( 'jquery-ui-autocomplete' ),
+			$this->version(),
+			true
+		);
+
+		wp_localize_script(
+			'term-pages-admin',
+			'termPagesAdmin',
+			array(
+				'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
+				'action'   => self::AJAX_ACTION,
+				'nonce'    => wp_create_nonce( self::NONCE_ACTION ),
+				'minChars' => 2,
+			)
+		);
 	}
 
 	/**
-	 * Render js-Snippet in frontend
+	 * Render the field on the "add new term" form.
+	 *
+	 * @param string $taxonomy Taxonomy slug.
 	 */
-	function render_frontend_js() {
+	public function render_add_field( $taxonomy ) {
 		?>
-		<script type="text/javascript">
-			jQuery(document).ready(function () {
-				var se_ajax_url = '<?php echo admin_url( 'admin-ajax.php' ); ?>';
-				jQuery('.or-page-id').suggest(se_ajax_url + '?action=tp_lookup');
-			});
-		</script>
-		<?php
-	}
-
-
-	/**
-	 * Render html for taxonomy field
-	 * @param $taxonomy
-	 */
-	function add_extra_taxonomy_field( $taxonomy ) {
-		global $orpageid;
-		?>
-		<div class="form-field term-group">
-			<label for="feature-group"><?php _e( 'overriding page', 'term-pages' ); ?></label>
-			<input type="text" placeholder="<?= _e( 'Please insert the title of the published page', 'term-pages' ); ?>" class="or-page-id" name="or-page-id" size="20" value="<?php echo esc_attr( $orpageid ); ?>">
+		<div class="form-field term-pages-field">
+			<label for="term-pages-page"><?php esc_html_e( 'Overriding page', 'term-pages' ); ?></label>
+			<?php $this->render_input( 0, $taxonomy ); ?>
 		</div>
-
-
-
 		<?php
 	}
 
 	/**
-	 * Save page-ID field.
-	 * @param $term_id
-	 * @param $tt_id
+	 * Render the field on the "edit term" form.
+	 *
+	 * @param WP_Term $term     Term being edited.
+	 * @param string  $taxonomy Taxonomy slug.
 	 */
-	function save_extra_field( $term_id, $tt_id ) {
-		if ( isset( $_POST['or-page-id'] ) && '' !== $_POST['or-page-id'] ) {
-			$group = sanitize_title( $_POST['or-page-id'] );
-			add_term_meta( $term_id, 'or-page-id', $group, true );
-		}
-	}
-
-	/**
-	 * Render form-field for page overwriting the taxonomy on admin
-	 * @param $term
-	 * @param $taxonomy
-	 */
-	function admin_render_taxonomy_field( $term, $taxonomy ) {
-		$post = get_term_meta( $term->term_id, 'or-page-id', true );
-
-		$orpageid = "";
-
-		//check if we have a post to prefill this field
-		if(isset($post) && $post != null && $post > 0) {
-			$orpageid = get_the_title( $post );
-			$orpageid .= ' : ' . $post;
-		}
-
+	public function render_edit_field( $term, $taxonomy ) {
+		$page_id = $term instanceof WP_Term ? $this->get_page_id( $term->term_id ) : 0;
 		?>
-		<tr>
-			<td colspan="2">
-			<div class="form-field term-group">
-				<label for="feature-group"><?php _e( 'overriding page', 'term-pages' ); ?></label>
-				<input type="text" placeholder="<?= _e( 'Please insert the title of the published page', 'term-pages' ); ?>" class="or-page-id" name="or-page-id" size="20" value="<?php echo esc_attr( $orpageid ); ?>">
-			</div>
+		<tr class="form-field term-pages-field">
+			<th scope="row">
+				<label for="term-pages-page"><?php esc_html_e( 'Overriding page', 'term-pages' ); ?></label>
+			</th>
+			<td>
+				<?php $this->render_input( $page_id, $taxonomy ); ?>
+			</td>
 		</tr>
 		<?php
 	}
 
 	/**
-	 * Update field value
-	 * @param $term_id
-	 * @param $tt_id
+	 * Render the autocomplete input plus the hidden field carrying the page ID.
+	 *
+	 * @param int    $page_id  Currently selected page, 0 for none.
+	 * @param string $taxonomy Taxonomy slug.
 	 */
-	function update_extra_field( $term_id, $tt_id ) {
-		if ( isset( $_POST['or-page-id'] ) && '' !== $_POST['or-page-id'] ) {
-			$str = $_POST['or-page-id'];
-
-			//get post id from string
-			preg_match( '/(?<name>.+) : (?<id>\d+)/', $str, $treffer );
-
-			//check value for id and save it
-			if(isset($treffer['id']) && get_post(intval($treffer['id'])) != null) {
-				update_term_meta( $term_id, 'or-page-id', intval($treffer['id']) );
-				return;
-			}
-		}
-		//delete term meta if post-value is not set, but also if
-		//regex does not match (no valid format of input)
-		delete_term_meta( $term_id, 'or-page-id' );
+	private function render_input( $page_id, $taxonomy ) {
+		$page_id = (int) $page_id;
+		$title   = $page_id > 0 ? get_the_title( $page_id ) : '';
+		?>
+		<input
+			type="text"
+			id="term-pages-page"
+			class="term-pages-page-search regular-text"
+			value="<?php echo esc_attr( $title ); ?>"
+			placeholder="<?php echo esc_attr__( 'Search for a published page', 'term-pages' ); ?>"
+			data-taxonomy="<?php echo esc_attr( $taxonomy ); ?>"
+			autocomplete="off"
+		>
+		<input
+			type="hidden"
+			class="term-pages-page-id"
+			name="<?php echo esc_attr( self::FIELD_NAME ); ?>"
+			value="<?php echo esc_attr( $page_id > 0 ? (string) $page_id : '' ); ?>"
+		>
+		<p class="description">
+			<?php esc_html_e( 'Start typing and pick a page from the list. Visitors of this term archive are then redirected to that page. Clear the field to remove the redirect.', 'term-pages' ); ?>
+		</p>
+		<?php
 	}
 
+	/* ---------------------------------------------------------------------
+	 * Page search
+	 * ------------------------------------------------------------------ */
 
 	/**
-	 * Look for pages by query string (for autocomplete)
+	 * Return published pages matching the search term as autocomplete items.
+	 *
+	 * Requires a valid nonce and the capability to edit terms of the taxonomy
+	 * the field was rendered for. There is deliberately no nopriv variant.
 	 */
-	function lookup_pages() {
-		global $wpdb;
+	public function ajax_lookup_pages() {
+		check_ajax_referer( self::NONCE_ACTION );
 
-		$search = $wpdb->esc_like( $_REQUEST['q'] );
+		$taxonomy_name = isset( $_REQUEST['taxonomy'] ) ? sanitize_key( wp_unslash( $_REQUEST['taxonomy'] ) ) : '';
+		$taxonomy      = $taxonomy_name ? get_taxonomy( $taxonomy_name ) : false;
 
-		$query = 'SELECT ID,post_title FROM ' . $wpdb->posts . '
-        WHERE post_title LIKE \'' . $search . '%\'
-        AND post_type = \'page\'
-        AND post_status = \'publish\'
-        ORDER BY post_title ASC';
-
-		foreach ( $wpdb->get_results( $query ) as $row ) {
-			$post_title = $row->post_title;
-			$id         = $row->ID;
-
-
-			echo $post_title . ' : ' . $id ."\n";
+		if ( ! $taxonomy || ! current_user_can( $taxonomy->cap->edit_terms ) ) {
+			wp_send_json_error(
+				array( 'message' => __( 'You are not allowed to edit terms of this taxonomy.', 'term-pages' ) ),
+				403
+			);
 		}
 
+		$search = isset( $_REQUEST['term'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['term'] ) ) : '';
 
-		die();
+		if ( mb_strlen( $search ) < 2 ) {
+			wp_send_json_success( array() );
+		}
+
+		$query = new WP_Query(
+			array(
+				'post_type'              => 'page',
+				'post_status'            => 'publish',
+				's'                      => $search,
+				'sentence'               => true,
+				'search_columns'         => array( 'post_title' ),
+				'posts_per_page'         => self::MAX_RESULTS,
+				'orderby'                => 'title',
+				'order'                  => 'ASC',
+				'no_found_rows'          => true,
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+			)
+		);
+
+		$items = array();
+
+		foreach ( $query->posts as $page ) {
+			$title = get_the_title( $page );
+
+			$items[] = array(
+				'id'    => (int) $page->ID,
+				/* translators: 1: page title, 2: page ID */
+				'label' => sprintf( __( '%1$s (#%2$d)', 'term-pages' ), $title, (int) $page->ID ),
+				'value' => $title,
+			);
+		}
+
+		wp_send_json_success( $items );
 	}
 
+	/* ---------------------------------------------------------------------
+	 * Saving
+	 * ------------------------------------------------------------------ */
 
 	/**
-	 * Redirect to taxonomy-page if there is no page parameter
-	 * @param \WP_Query $query
+	 * Store the selected page for a created or edited term.
+	 *
+	 * Runs on created_{$taxonomy} and edited_{$taxonomy}, that is after
+	 * WordPress verified its own nonce and the capability to manage the
+	 * taxonomy.
+	 *
+	 * @param int $term_id Term ID.
+	 * @param int $tt_id   Term taxonomy ID.
 	 */
-	function custom_page_query( $query ) {
-		//check if we have a taxonomy
-		if ( $query->is_main_query() && ( $query->is_category() ) || ( $query->is_tax() ) || ( $query->is_tag() ) ) {
+	public function save_field( $term_id, $tt_id ) {
+		unset( $tt_id );
 
-			$term = get_queried_object();
-			if($term == null && isset($query->query["category_name"]) && !empty($query->query["category_name"])){
-				$cat = $query->query["category_name"];
-				$term = get_term_by("slug", $cat, "category");
-			}
-			
-			if ( !($term instanceof WP_Term)) {
-				return;
-			}
-			
-			$term_id = $term->term_id;
-			$orid = intval( get_term_meta( $term_id, 'or-page-id', true ) );
-
-			$paged = get_query_var( 'paged' );
-
-			//redirect if this is the first (unpaged) page of the taxonomy and we have an id for overwriting
-			if ( ( $orid > 0 ) && ( $paged < 1 ) ) {
-				wp_redirect(get_permalink($orid) , $status= 301);
-				exit;
-			}
+		if ( ! isset( $_POST[ self::FIELD_NAME ] ) ) {
+			return;
 		}
+
+		if ( ! current_user_can( 'edit_term', $term_id ) ) {
+			return;
+		}
+
+		$page_id = $this->parse_page_id( wp_unslash( $_POST[ self::FIELD_NAME ] ) );
+
+		if ( $page_id > 0 ) {
+			update_term_meta( $term_id, self::META_KEY, $page_id );
+		} else {
+			delete_term_meta( $term_id, self::META_KEY );
+		}
+	}
+
+	/**
+	 * Turn a submitted value into a valid page ID, or 0.
+	 *
+	 * Accepts a plain ID as sent by the current field, and the legacy
+	 * "Page title : 123" format of earlier versions.
+	 *
+	 * @param mixed $value Raw, unslashed field value.
+	 * @return int Page ID or 0.
+	 */
+	private function parse_page_id( $value ) {
+		if ( ! is_scalar( $value ) ) {
+			return 0;
+		}
+
+		$value = trim( (string) $value );
+
+		if ( '' === $value || ! preg_match( '/(?:^|\s:\s)(\d+)\s*$/', $value, $matches ) ) {
+			return 0;
+		}
+
+		$page = get_post( (int) $matches[1] );
+
+		if ( ! $page instanceof WP_Post || 'page' !== $page->post_type ) {
+			return 0;
+		}
+
+		return (int) $page->ID;
+	}
+
+	/* ---------------------------------------------------------------------
+	 * Frontend redirect
+	 * ------------------------------------------------------------------ */
+
+	/**
+	 * Redirect the unpaged term archive to the connected page.
+	 */
+	public function redirect_term_archive() {
+		if ( is_paged() || is_feed() || is_embed() || is_robots() ) {
+			return;
+		}
+
+		if ( ! is_category() && ! is_tag() && ! is_tax() ) {
+			return;
+		}
+
+		$term = get_queried_object();
+
+		if ( ! $term instanceof WP_Term ) {
+			return;
+		}
+
+		$page_id = $this->get_page_id( $term->term_id );
+
+		if ( $page_id < 1 ) {
+			return;
+		}
+
+		$page = get_post( $page_id );
+
+		if ( ! $page instanceof WP_Post || 'page' !== $page->post_type || 'publish' !== $page->post_status ) {
+			return;
+		}
+
+		$url = get_permalink( $page );
+
+		if ( ! $url ) {
+			return;
+		}
+
+		wp_safe_redirect( $url, 301 );
+		exit;
+	}
+
+	/* ---------------------------------------------------------------------
+	 * Helpers
+	 * ------------------------------------------------------------------ */
+
+	/**
+	 * Page connected to a term.
+	 *
+	 * @param int $term_id Term ID.
+	 * @return int Page ID or 0.
+	 */
+	private function get_page_id( $term_id ) {
+		return (int) get_term_meta( (int) $term_id, self::META_KEY, true );
+	}
+
+	/**
+	 * Plugin version, read from the plugin header so it is defined only once.
+	 *
+	 * @return string
+	 */
+	private function version() {
+		static $version = null;
+
+		if ( null === $version ) {
+			$data    = get_file_data( __FILE__, array( 'Version' => 'Version' ) );
+			$version = empty( $data['Version'] ) ? '0' : $data['Version'];
+		}
+
+		return $version;
 	}
 }
 

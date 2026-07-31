@@ -28,14 +28,23 @@ sed_inplace() {
   rm -f "$2.bak"
 }
 
-# ── 1. Update the Version header in term-pages.php ───────────────────────────
-sed_inplace "s/^ \* Version: .*/ * Version: $VERSION/" "$PLUGIN_PHP"
+# ── 1. Update the Version header in term-pages.php (keeping its alignment) ───
+sed_inplace "s/^\( \* Version:[[:space:]]*\).*/\1$VERSION/" "$PLUGIN_PHP"
 
 # ── 2. Update Stable tag in readme.txt ──────────────────────────────────────
 sed_inplace "s/^Stable tag: .*/Stable tag: $VERSION/" "$README"
 
 # ── 3. Bail out if this version is already in the readme changelog ──────────
-if grep -qxF "= $VERSION =" "$README"; then
+# Only look inside "== Changelog ==" — "== Upgrade Notice ==" uses the same
+# "= x.y.z =" heading syntax and must not count as an existing entry.
+ALREADY_LOGGED=$(awk -v heading="= $VERSION =" '
+  /^== Changelog ==/ { in_changelog = 1; next }
+  in_changelog && /^== / { in_changelog = 0 }
+  in_changelog && $0 == heading { found = 1 }
+  END { print found ? "yes" : "no" }
+' "$README")
+
+if [[ "$ALREADY_LOGGED" == "yes" ]]; then
   echo "🤖 readme.txt already has a changelog entry for $VERSION — nothing to do"
   exit 0
 fi
