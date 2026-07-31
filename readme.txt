@@ -1,5 +1,5 @@
 === Term Pages ===
-Contributors: pixelwelt, edwardbock, palasthotel
+Contributors: pixelwelt, edwardbock, palasthotel, janame
 Donate link: http://palasthotel.de/
 Tags: term, tags, category, static page
 Requires at least: 4.0
@@ -48,5 +48,3 @@ No frequently asked questions yet.
 == Upgrade Notice ==
 
 No notices for upgrade.
-
-== Arbitrary section ==
