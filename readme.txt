@@ -1,5 +1,5 @@
 === Term Pages ===
-Contributors: pixelwelt, edwardbock, palasthotel, janame
+Contributors: pixelwelt, edwardbock, palasthotel, janaeggebrecht
 Donate link: http://palasthotel.de/
 Tags: term, tags, category, static page
 Requires at least: 6.2
