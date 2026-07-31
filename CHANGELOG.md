@@ -10,10 +10,3 @@
 ### Bug Fixes
 
 * prevent unauthenticated SQL injection in the page lookup (reported by Joao Ramos Maciel, WPScan) ([6c28285](https://github.com/palasthotel/term-pages/commit/6c282857df04a67d5ec3e6b4ced054c9d2c5d12e))
-
-## Changelog
-
-All notable changes to this plugin are documented here.
-History prior to this file is in the `== Changelog ==` section of [readme.txt](readme.txt).
-
-<!-- next release will be prepended here by release-please -->

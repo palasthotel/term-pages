@@ -55,10 +55,6 @@ No. It only redirects. The term archive keeps its URL and remains reachable from
 
 **Bug Fixes**
 * prevent unauthenticated SQL injection in the page lookup (reported by Joao Ramos Maciel, WPScan) (6c28285)
-## Changelog
-All notable changes to this plugin are documented here.
-History prior to this file is in the `== Changelog ==` section of readme.txt.
-<!-- next release will be prepended here by release-please -->
 
 = 1.0.3 =
 * Bugfix: wrong countable $term check
