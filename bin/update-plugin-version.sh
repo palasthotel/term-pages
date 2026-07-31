@@ -50,12 +50,16 @@ if [[ "$ALREADY_LOGGED" == "yes" ]]; then
 fi
 
 # ── 4. Extract and convert the changelog section for this version ────────────
-# CHANGELOG.md section starts with "## [X.Y.Z]" and ends before the next "## ["
-SECTION=$(awk "
-  /^## \[$VERSION\]/ { found=1; next }
-  found && /^## \[/ { exit }
+# The section starts at "## [X.Y.Z]" and ends at the next heading of the same or
+# a higher level. Stopping at any "# " / "## " — not just at the next "## [" —
+# keeps anything release-please parks below the entries out of the readme, while
+# the "### Bug Fixes" subheadings inside the entry are kept.
+SECTION=$(awk -v version="$VERSION" '
+  !found && index( $0, "## [" version "]" ) == 1 { found = 1; next }
+  found && ( /^# / || /^## / ) { exit }
+  found && /^[[:space:]]*<!--/ { next }
   found { print }
-" "$CHANGELOG")
+' "$CHANGELOG")
 
 if [[ -z "$SECTION" ]]; then
   echo "🤖 No CHANGELOG.md entry found for $VERSION — skipping changelog update"

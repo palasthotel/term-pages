@@ -8,7 +8,9 @@ it with the term you want to overwrite. Visitors hitting the term archive get a
 
 - **WordPress.org:** https://wordpress.org/plugins/term-pages/
 - **User documentation:** [readme.txt](readme.txt) (the text shown on WordPress.org)
-- **Changelog:** [CHANGELOG.md](CHANGELOG.md)
+- **Changelog:** [CHANGELOG.md](CHANGELOG.md) — release-please owns that file, so do
+  not add notes to it by hand. Entries before 2.0.0 are in the `== Changelog ==`
+  section of [readme.txt](readme.txt).
 
 ## Installation
 
