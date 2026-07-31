@@ -5,7 +5,7 @@ Tags: term, tags, category, static page
 Requires at least: 6.2
 Tested up to: 7.0.2
 Requires PHP: 7.4
-Stable tag: 1.0.3
+Stable tag: 2.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl
 
@@ -48,6 +48,17 @@ No. It only redirects. The term archive keeps its URL and remains reachable from
 1. Admin view for a tag where you can add the relation to a page in the autocomplete field.
 
 == Changelog ==
+
+= 2.0.0 =
+**⚠ BREAKING CHANGES**
+* the unauthenticated wp_ajax_nopriv_tp_lookup endpoint has been removed, the page search now requires a logged-in user with the capability to edit terms of the taxonomy. The plugin requires WordPress 6.2 and PHP 7.4, and the bundled remove.js was replaced by admin.js.
+
+**Bug Fixes**
+* prevent unauthenticated SQL injection in the page lookup (reported by Joao Ramos Maciel, WPScan) (6c28285)
+## Changelog
+All notable changes to this plugin are documented here.
+History prior to this file is in the `== Changelog ==` section of readme.txt.
+<!-- next release will be prepended here by release-please -->
 
 = 1.0.3 =
 * Bugfix: wrong countable $term check

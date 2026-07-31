@@ -3,7 +3,7 @@
  * Plugin Name:       Term Pages
  * Plugin URI:        https://wordpress.org/plugins/term-pages/
  * Description:       Redirects the first page of a term archive to a page of your choice.
- * Version:           1.0.3
+ * Version:           2.0.0
  * Requires at least: 6.2
  * Requires PHP:      7.4
  * Author:            PALASTHOTEL <rezeption@palasthotel.de>
