@@ -28,8 +28,8 @@ sed_inplace() {
   rm -f "$2.bak"
 }
 
-# ── 1. Update the Version header in term-pages.php ───────────────────────────
-sed_inplace "s/^ \* Version: .*/ * Version: $VERSION/" "$PLUGIN_PHP"
+# ── 1. Update the Version header in term-pages.php (keeping its alignment) ───
+sed_inplace "s/^\( \* Version:[[:space:]]*\).*/\1$VERSION/" "$PLUGIN_PHP"
 
 # ── 2. Update Stable tag in readme.txt ──────────────────────────────────────
 sed_inplace "s/^Stable tag: .*/Stable tag: $VERSION/" "$README"
