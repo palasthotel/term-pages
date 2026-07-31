@@ -32,6 +32,7 @@ and extract it into `wp-content/plugins/`.
 | `admin.js` | page autocomplete on the term screens |
 | `languages/` | translations (`de_DE` + `.pot`) |
 | `readme.txt` | WordPress.org plugin page |
+| `LICENSE` | GPL-3.0 text, shipped with the plugin |
 | `bin/` | release helper scripts |
 | `.github/workflows/` | CI/CD — see [.github/WORKFLOWS.md](.github/WORKFLOWS.md) |
 

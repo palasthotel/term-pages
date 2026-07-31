@@ -8,7 +8,7 @@
 set -e
 
 PLUGIN_SLUG="term-pages"
-PLUGIN_FILES="term-pages.php admin.js readme.txt screenshot-1.png languages"
+PLUGIN_FILES="term-pages.php admin.js readme.txt screenshot-1.png languages LICENSE"
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 PROJECT_PATH=$(cd "$SCRIPT_DIR/.." && pwd)
