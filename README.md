@@ -1,52 +1,69 @@
-=== Term Pages ===
-Contributors: pixelwelt, edwardbock, palasthotel
-Donate link: http://palasthotel.de/
-Tags: term, tags, category, static page
-Requires at least: 4.0
-Tested up to: 5.3.2
-Stable tag: 1.0.3
-License: GPLv3
-License URI: http://www.gnu.org/licenses/gpl
+# Term Pages
 
-Allows you to overwrite taxonomie archives with pages.
+Overwrites the first page of a term archive with a page.
 
-== Description ==
+If you want to customize your taxonomy archive pages, create a page and connect
+it with the term you want to overwrite. Visitors hitting the term archive get a
+301 redirect to that page — paginated archive pages (`/page/2`) are untouched.
 
-If you want to customize your taxonomie archive pages you can do this by creating a page and connect it with the taxonomy you want to overwrite.
+- **WordPress.org:** https://wordpress.org/plugins/term-pages/
+- **User documentation:** [readme.txt](readme.txt) (the text shown on WordPress.org)
+- **Changelog:** [CHANGELOG.md](CHANGELOG.md)
 
-This Plugin is reasonable to use with [Grid](http://wordpress.org/plugins/grid/ "Grid Landingpage Editor"), so you can create beautiful pages for your topics.
+## Installation
 
+Install *Term Pages* from the WordPress plugin directory, or download
+`term-pages.zip` from the [latest release](https://github.com/palasthotel/term-pages/releases/latest)
+and extract it into `wp-content/plugins/`.
 
-== Installation ==
+## Usage
 
-1. Upload `term-pages.zip` to the `/wp-content/plugins/` directory
-1. Extract the Plugin to a `term-pages` Folder
-1. Activate the plugin through the 'Plugins' menu in WordPress
+1. Create and publish the page that should replace the archive.
+2. Edit the term (category, tag or any custom taxonomy term).
+3. Type the page title into the **overriding page** field and pick it from the
+   autocomplete suggestions.
+4. Save the term.
 
-== Frequently Asked Questions ==
+## Repository layout
 
-No frequently asked questions yet.
+| Path | Description |
+|---|---|
+| `term-pages.php` | the plugin |
+| `remove.js` | admin JS for the autocomplete field |
+| `languages/` | translations (`de_DE` + `.pot`) |
+| `readme.txt` | WordPress.org plugin page |
+| `bin/` | release helper scripts |
+| `.github/workflows/` | CI/CD — see [.github/WORKFLOWS.md](.github/WORKFLOWS.md) |
 
-== Screenshots ==
+Only the files listed in `PLUGIN_FILES` in [`bin/pack.sh`](bin/pack.sh) are
+shipped to WordPress.org. Everything else stays GitHub-only.
 
-1. Admin view for a tag where you can add the relation to a page in the autocomplete field.
+## Releasing
 
-== Changelog ==
+Releases are automated with [release-please](https://github.com/googleapis/release-please)
+and deployed to the WordPress.org SVN repository. There is nothing to bump by
+hand — commit with [conventional commits](https://www.conventionalcommits.org/)
+and merge the release PR:
 
-= 1.0.3 =
-* Bugfix: wrong countable $term check
+```
+fix: …   → patch    feat: …  → minor    feat!: … → major
+```
 
-= 1.0.2 =
-* Bugfix: Remove warning
+```
+merge PR to main → release-please opens "chore(main): release x.y.z"
+                 → merge it → tag vx.y.z → deploy to WordPress.org
+```
 
-= 1.0.1 =
-* Bugfix: Missing argument 2 for Term_Pages::save_extra_field()
+The full pipeline, including the required secrets, is documented in
+[.github/WORKFLOWS.md](.github/WORKFLOWS.md). See [CONTRIBUTING.md](CONTRIBUTING.md)
+for the commit conventions.
 
-= 1.0 =
-* First release
+## Building locally
 
-== Upgrade Notice ==
+```sh
+bash bin/pack.sh    # → term-pages.zip + build/term-pages/
+```
 
-No notices for upgrade.
+## License
 
-== Arbitrary section ==
+GPLv3 — see http://www.gnu.org/licenses/gpl
