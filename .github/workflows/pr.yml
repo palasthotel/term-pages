@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   php-lint:
     name: PHP syntax check (${{ matrix.php-version }})
@@ -25,3 +28,12 @@ jobs:
         run: |
           find . -name '*.php' -not -path './build/*' -print0 \
             | xargs -0 -r -n1 php -l
+
+  pack:
+    name: Pack plugin
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Pack
+        run: bash bin/pack.sh

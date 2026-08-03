@@ -19,7 +19,7 @@ Push to main
     │
     │    On release PR (opened / synchronize)
     ├──▶ [update-plugin-version.yml]
-    │        Syncs term-pages.php Version + readme.txt Stable tag & changelog
+    │        Syncs public/term-pages.php Version + readme.txt Stable tag & changelog
     │
     │    On PR to main
     └──▶ [pr.yml]
@@ -95,9 +95,9 @@ Release PR opened / updated
     bash bin/update-plugin-version.sh
               │
               ├── reads version from version.txt
-              ├── updates "Version:" header in term-pages.php
-              ├── updates "Stable tag:" in readme.txt
-              └── prepends new "= x.y.z =" section to readme.txt changelog
+              ├── updates "Version:" header in public/term-pages.php
+              ├── updates "Stable tag:" in public/readme.txt
+              └── prepends new "= x.y.z =" section to the readme.txt changelog
               │
               ▼
     git commit + push → back onto the release PR branch
@@ -115,11 +115,11 @@ Tag: v1.0.4
       ├── strip prefix → VERSION=1.0.4
       │
       ├── bin/version-checker.sh
-      │       version.txt == readme.txt Stable tag == term-pages.php Version == tag
+      │       version.txt == readme.txt Stable tag == plugin header Version == tag
       │       mismatch → job fails before anything is published
       │
       ├── bin/pack.sh
-      │       copies the PLUGIN_FILES whitelist → build/term-pages/
+      │       copies public/ → build/term-pages/
       │       zip → term-pages.zip
       │
       ├──▶ Upload term-pages.zip to the GitHub Release
@@ -129,7 +129,7 @@ Tag: v1.0.4
       │
       └── SVN commit
               rm trunk/*  +  rm tags/$VERSION
-              cp build/term-pages/* → trunk/  +  tags/$VERSION/
+              cp public/* → trunk/  +  tags/$VERSION/
               svn add --force .
               svn rm deleted files
               svn commit "Release version $VERSION"
@@ -167,5 +167,5 @@ update its own release PR.
 | `version.txt` | release-please | machine-readable version, source for the sync script |
 | `.release-please-manifest.json` | release-please | last released version |
 | `CHANGELOG.md` | release-please | GitHub-facing changelog |
-| `term-pages.php` | `bin/update-plugin-version.sh` | `Version:` plugin header |
-| `readme.txt` | `bin/update-plugin-version.sh` | `Stable tag:` + `== Changelog ==` |
+| `public/term-pages.php` | `bin/update-plugin-version.sh` | `Version:` plugin header |
+| `public/readme.txt` | `bin/update-plugin-version.sh` | `Stable tag:` + `== Changelog ==` |

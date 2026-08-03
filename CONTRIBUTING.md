@@ -42,16 +42,17 @@ is a conventional commit — that is the message release-please reads.
 ## Versions
 
 Never edit version numbers by hand. `version.txt`, `CHANGELOG.md`,
-`term-pages.php` and the `Stable tag:` in `readme.txt` are all maintained by the
-release pipeline — see [.github/WORKFLOWS.md](.github/WORKFLOWS.md).
+`public/term-pages.php` and the `Stable tag:` in `public/readme.txt` are all
+maintained by the release pipeline — see
+[.github/WORKFLOWS.md](.github/WORKFLOWS.md).
 
-Content changes to `readme.txt` (description, FAQ, screenshots, tested-up-to)
-are of course done by hand; just leave `Stable tag:` and the `== Changelog ==`
-entries alone.
+Content changes to `public/readme.txt` (description, FAQ, screenshots,
+tested-up-to) are of course done by hand; just leave `Stable tag:` and the
+`== Changelog ==` entries alone.
 
 ## Checks
 
 Every PR runs `php -l` against PHP 7.4, 8.2, 8.3 and 8.4. The plugin declares
 `Requires PHP: 7.4` and `Requires at least: 6.2` (WordPress), so avoid syntax
-and APIs newer than that unless you raise the requirement in `term-pages.php`
-and `readme.txt` in the same PR.
+and APIs newer than that unless you raise the requirement in
+`public/term-pages.php` and `public/readme.txt` in the same PR.

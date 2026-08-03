@@ -33,7 +33,7 @@ jobs:
           ref: ${{ github.head_ref }}
           token: ${{ steps.app-token.outputs.token }}
 
-      - name: Sync version into term-pages.php and readme.txt
+      - name: Sync version into public/term-pages.php and public/readme.txt
         run: bash bin/update-plugin-version.sh
 
       - name: Commit to release PR branch
@@ -45,7 +45,7 @@ jobs:
           BOT_ID=$(gh api "/users/${APP_SLUG}%5Bbot%5D" --jq .id)
           git config user.name "${APP_SLUG}[bot]"
           git config user.email "${BOT_ID}+${APP_SLUG}[bot]@users.noreply.github.com"
-          git add term-pages.php readme.txt
+          git add public/term-pages.php public/readme.txt
           git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "chore: update term-pages.php and readme.txt"
           git push
