@@ -74,8 +74,11 @@ jobs:
           VERSION=${VERSION}
           rm -rf trunk/* tags/$VERSION || true
           mkdir -p trunk tags/$VERSION
-          cp -r ../public/* trunk/
-          cp -r trunk/* tags/$VERSION/
+          # -L resolves symlinks. cp is platform-dependent here - GNU cp keeps
+          # them while descending, BSD cp resolves them - and SVN refuses a commit
+          # that puts a symlink where it versions a regular file.
+          rsync -rL ../public/ trunk/
+          rsync -rL trunk/ tags/$VERSION/
           # assets/ holds the media for the wordpress.org plugin page (banner,
           # icon, screenshots). It is not part of the download, and the
           # repository is the source of truth for it — hence --delete.

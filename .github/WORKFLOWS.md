@@ -129,7 +129,7 @@ Tag: v1.0.4
       │
       └── SVN commit
               rm trunk/*  +  rm tags/$VERSION
-              cp public/* → trunk/  +  tags/$VERSION/
+              rsync -rL public/ → trunk/  →  tags/$VERSION/
               rsync --delete assets/ → assets/   (plugin page media)
               svn add --force .
               svn rm deleted files
@@ -141,6 +141,10 @@ page only — it is not part of what users download. The repository mirrors it w
 `--delete`, so it is the source of truth. When you adopt this workflow in a repo
 whose SVN `assets/` already holds files, copy those into the repository first,
 otherwise the next release deletes them.
+
+`rsync -rL` rather than `cp -r` because `cp` is platform-dependent — GNU `cp`
+keeps symlinks while descending a directory, BSD `cp` resolves them — and SVN
+refuses a commit that puts a symlink where it versions a regular file.
 
 ---
 
