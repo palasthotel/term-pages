@@ -76,6 +76,13 @@ jobs:
           mkdir -p trunk tags/$VERSION
           cp -r ../public/* trunk/
           cp -r trunk/* tags/$VERSION/
+          # assets/ holds the media for the wordpress.org plugin page (banner,
+          # icon, screenshots). It is not part of the download, and the
+          # repository is the source of truth for it — hence --delete.
+          if [ -d ../assets ]; then
+            mkdir -p assets
+            rsync -rL --delete ../assets/ assets/
+          fi
           svn add --force . || true
           svn status | awk '/^!/{print $2}' | while IFS= read -r file; do
             [ -n "$file" ] || continue

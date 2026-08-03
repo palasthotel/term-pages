@@ -130,10 +130,17 @@ Tag: v1.0.4
       └── SVN commit
               rm trunk/*  +  rm tags/$VERSION
               cp public/* → trunk/  +  tags/$VERSION/
+              rsync --delete assets/ → assets/   (plugin page media)
               svn add --force .
               svn rm deleted files
               svn commit "Release version $VERSION"
 ```
+
+`assets/` sits next to `trunk/` in the SVN repository and is served on the plugin
+page only — it is not part of what users download. The repository mirrors it with
+`--delete`, so it is the source of truth. When you adopt this workflow in a repo
+whose SVN `assets/` already holds files, copy those into the repository first,
+otherwise the next release deletes them.
 
 ---
 

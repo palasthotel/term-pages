@@ -38,10 +38,29 @@ repository-only.
 | `public/languages/` | translations (`de_DE` + `.pot`) |
 | `public/readme.txt` | WordPress.org plugin page |
 | `public/LICENSE` | GPL-3.0 text, shipped with the plugin |
+| `assets/` | media for the WordPress.org plugin page — not part of the download |
 | `plugin.php` | loads `public/term-pages.php` when the repository itself is checked out into `wp-content/plugins/` |
 | `LICENSE` | copy of the license text so GitHub detects it |
 | `bin/` | release helper scripts |
 | `.github/workflows/` | CI/CD — see [.github/WORKFLOWS.md](.github/WORKFLOWS.md) |
+
+### `assets/`
+
+The release mirrors this directory into the `assets/` directory of the
+WordPress.org SVN repository, which sits next to `trunk/` and is served on the
+plugin page only — nothing in here is downloaded by users. WordPress.org
+recognises the files by name:
+
+| File | Purpose |
+|---|---|
+| `screenshot-1.png`, `screenshot-2.png`, … | screenshots; the number picks the caption from `== Screenshots ==` in `readme.txt` |
+| `banner-772x250.png`, `banner-1544x500.png` | header image on the plugin page (the second one for retina) |
+| `icon-128x128.png`, `icon-256x256.png` or `icon.svg` | icon in the plugin search and installer |
+
+Localised variants use a locale suffix (`screenshot-1-de_DE.png`), a right-to-left
+banner uses `-rtl`. The repository is the source of truth: files removed here are
+removed from SVN on the next release. Since the mirror only runs on a release,
+changing a banner or icon needs a release to go live.
 
 ## Releasing
 
