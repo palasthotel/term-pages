@@ -1,15 +1,9 @@
 #!/bin/sh
-# Stages the plugin in build/term-pages/ — this directory is the exact payload
-# that gets deployed to the WordPress.org SVN trunk — and zips it to
-# term-pages.zip in the project root.
-#
-# When you add a file that belongs into the released plugin, add it to
-# PLUGIN_FILES below. Everything not listed here stays GitHub-only.
+# Zips the contents of public/ — exactly what is deployed to WordPress.org —
+# into term-pages.zip in the project root.
 set -e
 
 PLUGIN_SLUG="term-pages"
-PLUGIN_FILES="term-pages.php admin.js readme.txt screenshot-1.png languages LICENSE"
-
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 PROJECT_PATH=$(cd "$SCRIPT_DIR/.." && pwd)
 BUILD_PATH="$PROJECT_PATH/build"
@@ -20,9 +14,7 @@ rm -rf "$BUILD_PATH"
 mkdir -p "$DEST_PATH"
 
 echo "Syncing files..."
-for item in $PLUGIN_FILES; do
-	cp -R "$PROJECT_PATH/$item" "$DEST_PATH/"
-done
+rsync -rL "$PROJECT_PATH/public/" "$DEST_PATH/"
 
 echo "Generating zip file..."
 cd "$BUILD_PATH" || exit 1
@@ -31,5 +23,4 @@ mv "${PLUGIN_SLUG}.zip" "$PROJECT_PATH/"
 
 cd "$PROJECT_PATH" || exit 1
 echo "${PLUGIN_SLUG}.zip file generated!"
-echo "Plugin payload staged in build/${PLUGIN_SLUG}/"
 echo "Build done!"

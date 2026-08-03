@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Syncs the plugin's version carriers after release-please opened or updated the
 # release PR:
-#   - term-pages.php  "Version:" header
-#   - readme.txt      "Stable tag:" and a new "= x.y.z =" changelog section
+#   - public/term-pages.php  "Version:" header
+#   - public/readme.txt      "Stable tag:" and a new "= x.y.z =" changelog section
 # The version is read from version.txt, which release-please bumps in the PR.
 set -euo pipefail
 
@@ -11,8 +11,8 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 VERSION_FILE="$ROOT_DIR/version.txt"
 CHANGELOG="$ROOT_DIR/CHANGELOG.md"
-README="$ROOT_DIR/readme.txt"
-PLUGIN_PHP="$ROOT_DIR/term-pages.php"
+README="$ROOT_DIR/public/readme.txt"
+PLUGIN_PHP="$ROOT_DIR/public/term-pages.php"
 
 if [[ ! -f "$VERSION_FILE" ]]; then
   echo "🤖 version.txt not found — is this a release-please branch?" >&2

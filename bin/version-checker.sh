@@ -16,10 +16,10 @@ fi
 VERSION_TXT="$(tr -d '[:space:]' < "$ROOT_DIR/version.txt")"
 
 # 2) readme.txt "Stable tag:"
-README_VERSION="$(grep -E '^Stable tag:' "$ROOT_DIR/readme.txt" | head -n1 | sed -E 's/^Stable tag:[[:space:]]*//')"
+README_VERSION="$(grep -E '^Stable tag:' "$ROOT_DIR/public/readme.txt" | head -n1 | sed -E 's/^Stable tag:[[:space:]]*//')"
 
 # 3) term-pages.php plugin header "Version:"
-PLUGIN_VERSION="$(grep -E '^[[:space:]]*\*?[[:space:]]*Version:[[:space:]]*[0-9]+\.[0-9]+' "$ROOT_DIR/term-pages.php" \
+PLUGIN_VERSION="$(grep -E '^[[:space:]]*\*?[[:space:]]*Version:[[:space:]]*[0-9]+\.[0-9]+' "$ROOT_DIR/public/term-pages.php" \
   | head -n1 \
   | sed -E 's/.*Version:[[:space:]]*([0-9]+(\.[0-9]+)+).*/\1/')"
 

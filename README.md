@@ -7,10 +7,10 @@ it with the term you want to overwrite. Visitors hitting the term archive get a
 301 redirect to that page — paginated archive pages (`/page/2`) are untouched.
 
 - **WordPress.org:** https://wordpress.org/plugins/term-pages/
-- **User documentation:** [readme.txt](readme.txt) (the text shown on WordPress.org)
+- **User documentation:** [public/readme.txt](public/readme.txt) (the text shown on WordPress.org)
 - **Changelog:** [CHANGELOG.md](CHANGELOG.md) — release-please owns that file, so do
   not add notes to it by hand. Entries before 2.0.0 are in the `== Changelog ==`
-  section of [readme.txt](readme.txt).
+  section of [public/readme.txt](public/readme.txt).
 
 ## Installation
 
@@ -28,18 +28,20 @@ and extract it into `wp-content/plugins/`.
 
 ## Repository layout
 
+`public/` is exactly what ships to WordPress.org. Everything outside it is
+repository-only.
+
 | Path | Description |
 |---|---|
-| `term-pages.php` | the plugin |
-| `admin.js` | page autocomplete on the term screens |
-| `languages/` | translations (`de_DE` + `.pot`) |
-| `readme.txt` | WordPress.org plugin page |
-| `LICENSE` | GPL-3.0 text, shipped with the plugin |
+| `public/term-pages.php` | the plugin |
+| `public/admin.js` | page autocomplete on the term screens |
+| `public/languages/` | translations (`de_DE` + `.pot`) |
+| `public/readme.txt` | WordPress.org plugin page |
+| `public/LICENSE` | GPL-3.0 text, shipped with the plugin |
+| `plugin.php` | loads `public/term-pages.php` when the repository itself is checked out into `wp-content/plugins/` |
+| `LICENSE` | copy of the license text so GitHub detects it |
 | `bin/` | release helper scripts |
 | `.github/workflows/` | CI/CD — see [.github/WORKFLOWS.md](.github/WORKFLOWS.md) |
-
-Only the files listed in `PLUGIN_FILES` in [`bin/pack.sh`](bin/pack.sh) are
-shipped to WordPress.org. Everything else stays GitHub-only.
 
 ## Releasing
 

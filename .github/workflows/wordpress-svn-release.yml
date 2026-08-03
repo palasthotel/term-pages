@@ -74,7 +74,7 @@ jobs:
           VERSION=${VERSION}
           rm -rf trunk/* tags/$VERSION || true
           mkdir -p trunk tags/$VERSION
-          cp -r ../build/term-pages/* trunk/
+          cp -r ../public/* trunk/
           cp -r trunk/* tags/$VERSION/
           svn add --force . || true
           svn status | awk '/^!/{print $2}' | while IFS= read -r file; do
